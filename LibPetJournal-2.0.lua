@@ -177,7 +177,9 @@ lib._speciesids = lib._speciesids or {}
 lib._set_speciesids = lib._set_speciesids or {}
 
 
---- XXX document me
+--- Load pets stored in the PetJournal.
+-- Get an iterator over the list of pet ids.
+-- @name LibPetJournal:IteratePetIds()
 function lib:IteratePetIds(start)
     if start then
         return ipairs(lib._petids), lib._petids, start - 1
@@ -185,7 +187,9 @@ function lib:IteratePetIds(start)
     return ipairs(lib._petids)
 end
 
---- XXX document me
+--- Load pets stored in the PetJournal.
+-- Get an iterator over the list of species ids.
+-- @name LibPetJournal:IterateSpeciesIds()
 function lib:IterateSpeciesIds(start)
     if start then
         return ipairs(lib._speciesids), lib._speciesids, start - 1
@@ -244,7 +248,8 @@ end
 
 lib.event_frame:RegisterEvent("PET_JOURNAL_LIST_UPDATE")
 function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
-    -- delay load slightly so we can determine trigger source?
+    -- Delay load.  This event will fire multiple times if a 
+    -- filter function is called.
     start_background()
 end
 
