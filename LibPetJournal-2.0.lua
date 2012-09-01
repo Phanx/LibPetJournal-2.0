@@ -59,7 +59,8 @@ end
 
 for i,name in ipairs{"SetSearchFilter", "ClearSearchFilter", "SetFlagFilter",
         "SetPetSourceFilter", "SetPetTypeFilter", "AddAllPetSourcesFilter",
-        "AddAllPetTypesFilter", "ClearAllPetSourcesFilter", "ClearAllPetTypesFilter"} do
+        "AddAllPetTypesFilter", "ClearAllPetSourcesFilter", "ClearAllPetTypesFilter",
+        "SummonPetByID"} do
     if not lib._antifilter_hooked[name] then
         hooksecurefunc(C_PetJournal, name, function(...)
             return lib._antifilter_hook(name, ...)
@@ -173,19 +174,22 @@ end
 
 lib._petids = lib._petids or {}
 lib._speciesids = lib._speciesids or {}
+lib._set_speciesids = lib._set_speciesids or {}
+
 
 --- XXX document me
-function lib:IteratePetIds()
+function lib:IteratePetIds(start)
+    if start then
+        return ipairs(lib._petids), lib._petids, start - 1
+    end
     return ipairs(lib._petids)
 end
 
---[[
-function lib:IteratePetInfo()
-
-end]]
-
 --- XXX document me
-function lib:IterateSpeciesIds()
+function lib:IterateSpeciesIds(start)
+    if start then
+        return ipairs(lib._speciesids), lib._speciesids, start - 1
+    end
     return ipairs(lib._speciesids)
 end
 
@@ -198,7 +202,6 @@ function lib:LoadPets()
     
     -- scan pets
     wipe(lib._petids)
-    wipe(lib._speciesids)
     
     local total, owned = C_PetJournal.GetNumPets(false)
     for i = 1,total do
@@ -207,7 +210,11 @@ function lib:LoadPets()
         if isOwned then
             tinsert(lib._petids, petID)
         end
-        tinsert(lib._speciesids, speciesID)
+        
+        if not lib._set_speciesids[speciesID] then
+            lib._set_speciesids[speciesID] = true
+            tinsert(lib._speciesids, speciesID)
+        end
     end
     
     -- restore PJ filters
@@ -226,6 +233,14 @@ end
 function lib:IsLoaded()
     return #lib._petids > 0 or #lib._speciesids > 0
 end
+
+--- Determine how many pets the player owns.
+-- @name LibPetJournal:NumPets()
+-- @return number of owned pets
+function lib:NumPets()
+    return #lib._petids
+end
+
 
 lib.event_frame:RegisterEvent("PET_JOURNAL_LIST_UPDATE")
 function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
