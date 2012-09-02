@@ -208,6 +208,11 @@ function lib:LoadPets()
     wipe(lib._petids)
     
     local total, owned = C_PetJournal.GetNumPets(false)
+    if total == 0 and owned == 0 then
+        self.event_frame:Show()
+        return
+    end
+    
     for i = 1,total do
         local petID, speciesID, isOwned = C_PetJournal.GetPetInfoByIndex(i, false)
         
