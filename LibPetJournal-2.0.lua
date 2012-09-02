@@ -88,13 +88,14 @@ do
     lib._filter_hooks = lib._filter_hooks or {}
 
     -- hook C_PetJournal.SetSearchFilter
+    local last_search_filter
     if not lib._filter_hooks.SetSearchFilter then
         hooksecurefunc(C_PetJournal, "SetSearchFilter", function(...)
              lib._filter_hooks.SetSearchFilter(...)
         end)
     end
     lib._filter_hooks.SetSearchFilter = function(str)
-        s_search_filter = str
+        last_search_filter = str
     end
     
     -- hook C_PetJournal.ClearSearchFilter
@@ -104,7 +105,7 @@ do
         end)
     end
     lib._filter_hooks.ClearSearchFilter = function()
-        s_search_filter = nil
+        last_search_filter = nil
     end
 
     --- Save and clear the PetJournal filters.
