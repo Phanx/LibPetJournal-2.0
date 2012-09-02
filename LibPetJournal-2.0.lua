@@ -250,6 +250,17 @@ function lib:NumPets()
     return #lib._petids
 end
 
+lib.event_frame:RegisterEvent("COMPANION_UPDATE")
+function lib.event_frame:COMPANION_UPDATE(...)
+    local ctype = ...
+    -- Usually PET_JOURNAL_LIST_UPDATE is the correct event to watch for, 
+    -- but on login, pets are not usually properly loaded yet.  Worse, not 
+    -- even at P_E_W will this information be available.  After pets are
+    -- loaded, this event only seems to fire when changing pets.
+    if (ctype == nil or ctype == "CRITTER") and lib._petids == 0 then
+        lib:LoadPets()
+    end
+end
 
 lib.event_frame:RegisterEvent("PET_JOURNAL_LIST_UPDATE")
 function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
