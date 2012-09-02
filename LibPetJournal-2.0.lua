@@ -257,7 +257,7 @@ function lib.event_frame:COMPANION_UPDATE(...)
     -- but on login, pets are not usually properly loaded yet.  Worse, not 
     -- even at P_E_W will this information be available.  After pets are
     -- loaded, this event only seems to fire when changing pets.
-    if (ctype == nil or ctype == "CRITTER") and lib._petids == 0 then
+    if (ctype == nil or ctype == "CRITTER") and #lib._petids == 0 then
         lib:LoadPets()
     end
 end
