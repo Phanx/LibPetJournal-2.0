@@ -225,12 +225,12 @@ function lib:LoadPets()
             tinsert(lib._speciesids, speciesID)
         end
     end
-    
-    -- restore PJ filters
-    self:RestoreFilters()
        
     -- Signal
     self.callbacks:Fire("PetsUpdated", self)
+    
+    -- restore PJ filters
+    self:RestoreFilters()
     
     filter_changed = false
     self.event_frame:Hide()
