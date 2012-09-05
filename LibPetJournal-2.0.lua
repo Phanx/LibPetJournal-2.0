@@ -178,62 +178,24 @@ lib._speciesids = lib._speciesids or {}
 lib._set_speciesids = lib._set_speciesids or {}
 
 --- Get an iterator over the list of pet ids.
--- @name LibPetJournal:IteratePetIds()
-function lib:IteratePetIds(start)
+-- @name LibPetJournal:IteratePetIDs()
+function lib:IteratePetIDs(start)
     if start then
         return ipairs(lib._petids), lib._petids, start - 1
     end
     return ipairs(lib._petids)
 end
+lib.IteratePetIds = lib.IteratePetIDs
 
 --- Get an iterator over the list of species ids.
 -- @name LibPetJournal:IterateSpeciesIds()
-function lib:IterateSpeciesIds(start)
+function lib:IterateSpeciesIDs(start)
     if start then
         return ipairs(lib._speciesids), lib._speciesids, start - 1
     end
     return ipairs(lib._speciesids)
 end
-
-function iterate_petid_by_speciesid(spid, idx)
-    while true do
-        idx = idx + 1
-        
-        local petid = lib._petids[idx]
-        if not petid then
-            return
-        end
-        
-        local speciesid = C_PetJournal.GetPetInfoByPetID(petid)
-        if speciesid == spid then
-            return idx, petid
-        end
-    end
-end
-
-function lib:IteratePetIdsBySpeciesId(speciesID)
-    return iterate_petid_by_speciesid, speciesID, 0
-end
-
-function iterate_petid_by_creatureid(id, idx)
-    while true do
-        idx = idx + 1
-        
-        local petid = lib._petids[idx]
-        if not petid then
-            return
-        end
-        
-        local _, _, _, _, _, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByPetID(petid)
-        if creatureID == id then
-            return idx, petid
-        end
-    end
-end
-
-function lib:IteratePetIdsByCreatureId(creatureID)
-    return iterate_petid_by_speciesid, creatureID, 0
-end
+lib.IterateSpeciesIds = lib.IterateSpeciesIDs
 
 --- Load pets stored in the PetJournal.
 -- Under normal circumstances with API will run on its own in response to
