@@ -20,7 +20,7 @@
  IN THE SOFTWARE.
 ]]
 
-local MAJOR, MINOR = "LibPetJournal-2.0", 8
+local MAJOR, MINOR = "LibPetJournal-2.0", 9
 local lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not lib then return end
@@ -153,7 +153,7 @@ do
         if last_search_filter == nil then
             -- There's no way to actually get the current search filter without hooking it,
             -- and anyone loading earlier (especially if we are LOD) could have set it
-            -- before our hook, so always clear
+            -- before our hook, so always clear the first time
             last_search_filter = ""
             C_PetJournal.ClearSearchFilter()
         elseif last_search_filter ~= "" then
