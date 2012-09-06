@@ -110,7 +110,7 @@ do
 
     --- Save and clear the PetJournal filters.
     -- Also prevents LibPetJournal or the PetJournal from reacting to filter
-    -- events until :RestoreFilters() is called.  This API is called
+    -- events until :RestoreFilters() is called.  This is called
     -- automatically by LibPetJournal.
     -- @name LibPetJournal:ClearFilters()
     function lib:ClearFilters()
@@ -155,7 +155,7 @@ do
             -- and anyone loading earlier (especially if we are LOD) could have set it
             -- before our hook, so try to detect that
             last_search_filter = ""
-            if C_PetJournal.GetNumPets(false) < 400 then -- actual number ~490
+            if C_PetJournal.GetNumPets(false) < 400 then -- actual number with no pets ~490
                C_PetJournal.ClearSearchFilter()
             end
         elseif last_search_filter ~= "" then
@@ -168,8 +168,7 @@ do
 
     --- Restore PetJournal filters after a :ClearFilters() call.
     -- Also reenables PetJournal and LibPetJournal reacting to the updated pet
-    -- journal event. until :RestoreFilters() is called.  This API is called
-    -- automatically by LibPetJournal.
+    -- journal event. This is called automatically by LibPetJournal.
     -- @name LibPetJournal:RestoreFilters()
     function lib:RestoreFilters()
         if s_search_filter and s_search_filter ~= "" then
