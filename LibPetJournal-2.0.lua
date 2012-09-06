@@ -119,25 +119,44 @@ do
         end
         lib.event_frame:UnregisterEvent("PET_JOURNAL_LIST_UPDATE")
         
-        s_search_filter = last_search_filter
-        C_PetJournal.ClearSearchFilter()
-        
+        if last_search_filter ~= "" and last_search_filter ~= nil then
+            -- TODO try checking PetJournal's textbox if we get loaded late?
+            s_search_filter = last_search_filter
+            C_PetJournal.ClearSearchFilter()
+        else
+            s_search_filter = nil
+        end
+
         for flag, value in pairs(PJ_FLAG_FILTERS) do
             flag_filters[flag] = not C_PetJournal.IsFlagFiltered(flag)
-            C_PetJournal.SetFlagFilter(flag, value)
+            if flag_filters[flag] ~= value then
+                C_PetJournal.SetFlagFilter(flag, value)
+            end
         end
         
+        local need_add_all = false
         local ntypes = C_PetJournal.GetNumPetTypes()
         for i=1,ntypes do
             type_filters[i] = not C_PetJournal.IsPetTypeFiltered(i)
+            if not type_filters[i] then
+                need_add_all = true
+            end
         end
-        C_PetJournal.AddAllPetTypesFilter()
+        if need_add_all then
+            C_PetJournal.AddAllPetTypesFilter()
+        end
         
+        need_add_all = false
         local nsources = C_PetJournal.GetNumPetSources()
         for i=1,nsources do
             source_filters[i] = not C_PetJournal.IsPetSourceFiltered(i)
+            if not source_filters[i] then
+                need_add_all = true
+            end
         end
-        C_PetJournal.AddAllPetSourcesFilter()
+        if need_add_all then
+            C_PetJournal.AddAllPetSourcesFilter()
+        end
     end
 
     --- Restore PetJournal filters after a :ClearFilters() call.
@@ -146,20 +165,26 @@ do
     -- automatically by LibPetJournal.
     -- @name LibPetJournal:RestoreFilters()
     function lib:RestoreFilters()
-        if s_search_filter then
+        if s_search_filter and s_search_filter ~= "" then
             C_PetJournal.SetSearchFilter(s_search_filter)
         end
         
         for flag, value in pairs(flag_filters) do
-            C_PetJournal.SetFlagFilter(flag, value)
+            if value ~= PJ_FLAG_FILTERS[flag] then
+                C_PetJournal.SetFlagFilter(flag, value)
+            end
         end
         
         for flag,value in pairs(type_filters) do
-            C_PetJournal.SetPetTypeFilter(flag, value)
+            if value ~= true then
+                C_PetJournal.SetPetTypeFilter(flag, value)
+            end
         end
         
         for flag,value in pairs(source_filters) do
-            C_PetJournal.SetPetSourceFilter(flag, value)
+            if value ~= true then
+                C_PetJournal.SetPetSourceFilter(flag, value)
+            end
         end
     
         if PetJournal then
@@ -272,7 +297,9 @@ end
 lib.event_frame:RegisterEvent("ADDON_LOADED")
 function lib.event_frame:ADDON_LOADED()
     lib.event_frame:UnregisterEvent("ADDON_LOADED")
-    lib:LoadPets()
+    if not lib:IsLoaded() then
+        lib:LoadPets()
+    end
 end
 
 local timer = 0
