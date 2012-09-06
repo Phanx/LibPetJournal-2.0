@@ -105,7 +105,7 @@ do
         end)
     end
     lib._filter_hooks.ClearSearchFilter = function()
-        last_search_filter = nil
+        last_search_filter = ""
     end
 
     --- Save and clear the PetJournal filters.
@@ -118,14 +118,6 @@ do
             PetJournal:UnregisterEvent("PET_JOURNAL_LIST_UPDATE")
         end
         lib.event_frame:UnregisterEvent("PET_JOURNAL_LIST_UPDATE")
-        
-        if last_search_filter ~= "" and last_search_filter ~= nil then
-            -- TODO try checking PetJournal's textbox if we get loaded late?
-            s_search_filter = last_search_filter
-            C_PetJournal.ClearSearchFilter()
-        else
-            s_search_filter = nil
-        end
 
         for flag, value in pairs(PJ_FLAG_FILTERS) do
             flag_filters[flag] = not C_PetJournal.IsFlagFiltered(flag)
@@ -156,6 +148,21 @@ do
         end
         if need_add_all then
             C_PetJournal.AddAllPetSourcesFilter()
+        end
+
+        if last_search_filter == nil then
+            -- There's no way to actually get the current search filter without hooking it,
+            -- and anyone loading earlier (especially if we are LOD) could have set it
+            -- before our hook, so try to detect that
+            last_search_filter = ""
+            if C_PetJournal.GetNumPets(false) < 400 then -- actual number ~490
+               C_PetJournal.ClearSearchFilter()
+            end
+        elseif last_search_filter ~= "" then
+            s_search_filter = last_search_filter
+            C_PetJournal.ClearSearchFilter()
+        else
+            s_search_filter = nil
         end
     end
 
