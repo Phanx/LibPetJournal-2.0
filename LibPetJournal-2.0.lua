@@ -153,11 +153,9 @@ do
         if last_search_filter == nil then
             -- There's no way to actually get the current search filter without hooking it,
             -- and anyone loading earlier (especially if we are LOD) could have set it
-            -- before our hook, so try to detect that
+            -- before our hook, so always clear
             last_search_filter = ""
-            if C_PetJournal.GetNumPets(false) < 400 then -- actual number with no pets ~490
-               C_PetJournal.ClearSearchFilter()
-            end
+            C_PetJournal.ClearSearchFilter()
         elseif last_search_filter ~= "" then
             s_search_filter = last_search_filter
             C_PetJournal.ClearSearchFilter()
