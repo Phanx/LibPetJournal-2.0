@@ -47,29 +47,6 @@ lib.event_frame:SetScript("OnEvent", function(frame, event, ...)
 end)
 
 --
--- filter anti-response
---
-
-local filter_changed = false
-
-lib._antifilter_hooked = lib._antifilter_hooked or {}
-lib._antifilter_hook = function()
-    filter_changed = true
-end
-
-for i,name in ipairs{"SetSearchFilter", "ClearSearchFilter", "SetFlagFilter",
-        "SetPetSourceFilter", "SetPetTypeFilter", "AddAllPetSourcesFilter",
-        "AddAllPetTypesFilter", "ClearAllPetSourcesFilter", "ClearAllPetTypesFilter",
-        "SummonPetByID"} do
-    if not lib._antifilter_hooked[name] then
-        hooksecurefunc(C_PetJournal, name, function(...)
-            return lib._antifilter_hook(name, ...)
-        end)
-        lib._antifilter_hooked[name] = true
-    end
-end
-
---
 -- filter handling
 --
 
@@ -256,7 +233,7 @@ function lib:LoadPets()
     end
        
     -- Signal
-    self.callbacks:Fire("PetsUpdated", self)
+    self.callbacks:Fire("PetListUpdated", self)
     
     -- restore PJ filters
     self:RestoreFilters()
@@ -293,9 +270,17 @@ end
 
 lib.event_frame:RegisterEvent("PET_JOURNAL_LIST_UPDATE")
 function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
-    -- Delay load.  This event will fire multiple times if a 
-    -- filter function is called.
-    start_background()
+    local total, owned = C_PetJournal.GetNumPets(false)
+    
+    lib._last_total = total
+    if lib._last_total ~= total then
+        if not lib:LoadPets() then
+            return
+        end
+        lib._last_total = total
+    end
+    
+    lib.callbacks:Fire("PetsUpdated", self)
 end
 
 lib.event_frame:RegisterEvent("ADDON_LOADED")
@@ -314,15 +299,7 @@ end
 
 lib.event_frame:SetScript("OnUpdate", function(frame, elapsed)
     timer = timer + elapsed
-    if timer > 2 then
-        if filter_changed then
-            filter_changed = false
-            if lib:IsLoaded() then
-                frame:Hide()
-            end
-            return
-        end
-        
+    if timer > 2 then        
         lib:LoadPets()
         timer = 0
     end
