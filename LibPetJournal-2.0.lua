@@ -34,8 +34,6 @@ local hooksecurefunc, tinsert, pairs, wipe = _G.hooksecurefunc, _G.table.insert,
 local ipairs = _G.ipairs
 local C_PetJournal = _G.C_PetJournal
 
-local start_background
-
 --
 --
 --
@@ -292,11 +290,6 @@ function lib.event_frame:ADDON_LOADED()
 end
 
 local timer = 0
-function start_background()
-    timer = 10  -- run immediately on next OnUpdate
-    lib.event_frame:Show()
-end
-
 lib.event_frame:SetScript("OnUpdate", function(frame, elapsed)
     timer = timer + elapsed
     if timer > 2 then        
