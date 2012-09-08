@@ -20,7 +20,7 @@
  IN THE SOFTWARE.
 ]]
 
-local MAJOR, MINOR = "LibPetJournal-2.0", 10
+local MAJOR, MINOR = "LibPetJournal-2.0", 11
 local lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not lib then return end
@@ -238,6 +238,8 @@ function lib:LoadPets()
     
     filter_changed = false
     self.event_frame:Hide()
+    
+    return true
 end
 
 --- Determine if the pet list has been loaded.
@@ -270,12 +272,12 @@ lib.event_frame:RegisterEvent("PET_JOURNAL_LIST_UPDATE")
 function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
     local total, owned = C_PetJournal.GetNumPets(false)
     
-    lib._last_total = total
-    if lib._last_total ~= total then
+    lib._last_owned = owned
+    if lib._last_owned ~= owned then
         if not lib:LoadPets() then
             return
         end
-        lib._last_total = total
+        lib._last_owned = total
     end
     
     lib.callbacks:Fire("PetsUpdated", self)
