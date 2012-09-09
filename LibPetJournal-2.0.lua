@@ -233,6 +233,7 @@ do
         
         local total, owned = C_PetJournal.GetNumPets(false)
         if total == 0 and owned == 0 then
+            self:RestoreFilters()
             self.event_frame:Show()
             running = false
             return
