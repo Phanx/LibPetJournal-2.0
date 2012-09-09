@@ -292,7 +292,7 @@ function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
         if not lib:LoadPets() then
             return
         end
-        lib._last_owned = total
+        lib._last_owned = owned
     end
     
     lib.callbacks:Fire("PetsUpdated", self)
