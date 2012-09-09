@@ -212,50 +212,60 @@ function lib:IterateCreatureIDs(start)
     return ipairs(lib._creatureids)
 end
 
---- Load pets stored in the PetJournal.
--- Under normal circumstances with API will run on its own in response to
--- updates to the Pet Journal.
--- @name LibPetJournal:LoadPets()
-function lib:LoadPets()
-    self:ClearFilters()
+do
+    local running = false
     
-    -- scan pets
-    wipe(lib._petids)
-    
-    local total, owned = C_PetJournal.GetNumPets(false)
-    if total == 0 and owned == 0 then
-        self.event_frame:Show()
-        return
+    --- Load pets stored in the PetJournal.
+    -- Under normal circumstances with API will run on its own in response to
+    -- updates to the Pet Journal.
+    -- @name LibPetJournal:LoadPets()
+    function lib:LoadPets()
+        if running then
+            return false
+        end
+        
+        running = true
+        self:ClearFilters()
+        
+        -- scan pets
+        wipe(lib._petids)
+        
+        local total, owned = C_PetJournal.GetNumPets(false)
+        if total == 0 and owned == 0 then
+            self.event_frame:Show()
+            running = false
+            return
+        end
+        
+        for i = 1,total do
+            local petID, speciesID, isOwned, _, _, _, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByIndex(i, false)
+            
+            if isOwned then
+                tinsert(lib._petids, petID)
+            end
+            
+            if not lib._set_speciesids[speciesID] then
+                lib._set_speciesids[speciesID] = true
+                tinsert(lib._speciesids, speciesID)
+            end
+            
+            if not lib._set_creatureids[creatureID] then
+                lib._set_creatureids[creatureID] = true
+                tinsert(lib._creatureids, creatureID)
+            end
+        end
+        
+        -- Signal
+        self.callbacks:Fire("PetListUpdated", self)
+        
+        -- restore PJ filters
+        self:RestoreFilters()
+        
+        self.event_frame:Hide()
+        running = false
+        
+        return true
     end
-    
-    for i = 1,total do
-        local petID, speciesID, isOwned, _, _, _, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByIndex(i, false)
-        
-        if isOwned then
-            tinsert(lib._petids, petID)
-        end
-        
-        if not lib._set_speciesids[speciesID] then
-            lib._set_speciesids[speciesID] = true
-            tinsert(lib._speciesids, speciesID)
-        end
-        
-        if not lib._set_creatureids[creatureID] then
-            lib._set_creatureids[creatureID] = true
-            tinsert(lib._creatureids, creatureID)
-        end
-    end
-       
-    -- Signal
-    self.callbacks:Fire("PetListUpdated", self)
-    
-    -- restore PJ filters
-    self:RestoreFilters()
-    
-    filter_changed = false
-    self.event_frame:Hide()
-    
-    return true
 end
 
 --- Determine if the pet list has been loaded.
