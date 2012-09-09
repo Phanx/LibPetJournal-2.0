@@ -180,6 +180,8 @@ end
 lib._petids = lib._petids or {}
 lib._speciesids = lib._speciesids or {}
 lib._set_speciesids = lib._set_speciesids or {}
+lib._creatureids = lib._creatureids or {}
+lib._set_creatureids = lib._set_creatureids or {}
 
 --- Get an iterator over the list of pet ids.
 -- @name LibPetJournal:IteratePetIDs()
@@ -192,7 +194,7 @@ end
 lib.IteratePetIds = lib.IteratePetIDs
 
 --- Get an iterator over the list of species ids.
--- @name LibPetJournal:IterateSpeciesIds()
+-- @name LibPetJournal:IterateSpeciesIDs()
 function lib:IterateSpeciesIDs(start)
     if start then
         return ipairs(lib._speciesids), lib._speciesids, start - 1
@@ -200,6 +202,15 @@ function lib:IterateSpeciesIDs(start)
     return ipairs(lib._speciesids)
 end
 lib.IterateSpeciesIds = lib.IterateSpeciesIDs
+
+--- Get an iterator over the list of creature ids.
+-- @name LibPetJournal:IterateCreatureIDs()
+function lib:IterateCreatureIDs(start)
+    if start then
+        return ipairs(lib._creatureids), lib._creatureids, start - 1
+    end
+    return ipairs(lib._creatureids)
+end
 
 --- Load pets stored in the PetJournal.
 -- Under normal circumstances with API will run on its own in response to
@@ -218,7 +229,7 @@ function lib:LoadPets()
     end
     
     for i = 1,total do
-        local petID, speciesID, isOwned = C_PetJournal.GetPetInfoByIndex(i, false)
+        local petID, speciesID, isOwned, _, _, _, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByIndex(i, false)
         
         if isOwned then
             tinsert(lib._petids, petID)
@@ -227,6 +238,11 @@ function lib:LoadPets()
         if not lib._set_speciesids[speciesID] then
             lib._set_speciesids[speciesID] = true
             tinsert(lib._speciesids, speciesID)
+        end
+        
+        if not lib._set_creatureids[creatureID] then
+            lib._set_creatureids[creatureID] = true
+            tinsert(lib._creatureids, creatureID)
         end
     end
        
