@@ -184,6 +184,7 @@ lib._creatureids = lib._creatureids or {}
 lib._set_creatureids = lib._set_creatureids or {}
 
 --- Get an iterator over the list of pet ids.
+-- The specific order of pet ids returned should not be relied upon.
 -- @name LibPetJournal:IteratePetIDs()
 function lib:IteratePetIDs(start)
     if start then
