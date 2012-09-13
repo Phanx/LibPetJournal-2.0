@@ -89,6 +89,9 @@ do
     -- automatically by LibPetJournal.
     -- @name LibPetJournal:ClearFilters()
     function lib:ClearFilters()
+        assert(not lib._filters_cleared, "ClearFilters() already called")
+        lib._filters_cleared = true
+        
         if PetJournal then
             PetJournal:UnregisterEvent("PET_JOURNAL_LIST_UPDATE")
         end
@@ -144,6 +147,9 @@ do
     -- journal event. This is called automatically by LibPetJournal.
     -- @name LibPetJournal:RestoreFilters()
     function lib:RestoreFilters()
+        assert(lib._filters_cleared, "ClearFilters() not called yet")
+        lib._filters_cleared = false
+        
         if s_search_filter and s_search_filter ~= "" then
             C_PetJournal.SetSearchFilter(s_search_filter)
         end
