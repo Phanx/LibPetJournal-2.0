@@ -218,7 +218,13 @@ function lib:IterateCreatureIDs(start)
     end
     return ipairs(lib._creatureids)
 end
-   
+
+--- Return the species id for a given creature id.
+-- @name LibPetJournal:GetSpeciesIDForCreatureID()
+function lib:GetSpeciesIDForCreatureID(creatureid)
+    return self._creatureids[creatureid]
+end
+
 --- Load pets stored in the PetJournal.
 -- Under normal circumstances with API will run on its own in response to
 -- updates to the Pet Journal.
@@ -255,7 +261,7 @@ function lib:LoadPets()
         end
         
         if not lib._set_creatureids[creatureID] then
-            lib._set_creatureids[creatureID] = true
+            lib._set_creatureids[creatureID] = speciesID
             tinsert(lib._creatureids, creatureID)
         end
     end
