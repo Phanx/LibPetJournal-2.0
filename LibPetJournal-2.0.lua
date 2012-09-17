@@ -222,7 +222,7 @@ end
 --- Return the species id for a given creature id.
 -- @name LibPetJournal:GetSpeciesIDForCreatureID()
 function lib:GetSpeciesIDForCreatureID(creatureid)
-    return self._creatureids[creatureid]
+    return self._set_creatureids[creatureid]
 end
 
 --- Load pets stored in the PetJournal.
