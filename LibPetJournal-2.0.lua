@@ -192,30 +192,21 @@ lib._set_creatureids = lib._set_creatureids or {}
 --- Get an iterator over the list of pet ids.
 -- The specific order of pet ids returned should not be relied upon.
 -- @name LibPetJournal:IteratePetIDs()
-function lib:IteratePetIDs(start)
-    if start then
-        return ipairs(lib._petids), lib._petids, start - 1
-    end
+function lib:IteratePetIDs()
     return ipairs(lib._petids)
 end
 lib.IteratePetIds = lib.IteratePetIDs
 
 --- Get an iterator over the list of species ids.
 -- @name LibPetJournal:IterateSpeciesIDs()
-function lib:IterateSpeciesIDs(start)
-    if start then
-        return ipairs(lib._speciesids), lib._speciesids, start - 1
-    end
+function lib:IterateSpeciesIDs()
     return ipairs(lib._speciesids)
 end
 lib.IterateSpeciesIds = lib.IterateSpeciesIDs
 
 --- Get an iterator over the list of creature ids.
 -- @name LibPetJournal:IterateCreatureIDs()
-function lib:IterateCreatureIDs(start)
-    if start then
-        return ipairs(lib._creatureids), lib._creatureids, start - 1
-    end
+function lib:IterateCreatureIDs()
     return ipairs(lib._creatureids)
 end
 
