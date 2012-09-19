@@ -193,21 +193,21 @@ lib._set_creatureids = lib._set_creatureids or {}
 -- The specific order of pet ids returned should not be relied upon.
 -- @name LibPetJournal:IteratePetIDs()
 function lib:IteratePetIDs()
-    return ipairs(lib._petids)
+    return ipairs(self._petids)
 end
 lib.IteratePetIds = lib.IteratePetIDs
 
 --- Get an iterator over the list of species ids.
 -- @name LibPetJournal:IterateSpeciesIDs()
 function lib:IterateSpeciesIDs()
-    return ipairs(lib._speciesids)
+    return ipairs(self._speciesids)
 end
 lib.IterateSpeciesIds = lib.IterateSpeciesIDs
 
 --- Get an iterator over the list of creature ids.
 -- @name LibPetJournal:IterateCreatureIDs()
 function lib:IterateCreatureIDs()
-    return ipairs(lib._creatureids)
+    return ipairs(self._creatureids)
 end
 
 --- Return the species id for a given creature id.
@@ -221,7 +221,7 @@ end
 -- updates to the Pet Journal.
 -- @name LibPetJournal:LoadPets()
 function lib:LoadPets()
-    if lib._running then
+    if self._running then
         return false
     end
     
@@ -236,7 +236,7 @@ function lib:LoadPets()
     if total == 0 and owned == 0 then
         self:RestoreFilters()
         self.event_frame:Show()
-        lib._running = false
+        self._running = false
         return
     end
     
@@ -244,22 +244,22 @@ function lib:LoadPets()
         local petID, speciesID, isOwned, _, _, _, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByIndex(i, false)
         
         if isOwned then
-            tinsert(lib._petids, petID)
+            tinsert(self._petids, petID)
         end
         
-        if not lib._set_speciesids[speciesID] then
-            lib._set_speciesids[speciesID] = true
-            tinsert(lib._speciesids, speciesID)
+        if not self._set_speciesids[speciesID] then
+            self._set_speciesids[speciesID] = true
+            tinsert(self._speciesids, speciesID)
         end
         
-        if not lib._set_creatureids[creatureID] then
-            lib._set_creatureids[creatureID] = speciesID
-            tinsert(lib._creatureids, creatureID)
+        if not self._set_creatureids[creatureID] then
+            self._set_creatureids[creatureID] = speciesID
+            tinsert(self._creatureids, creatureID)
         end
     end
     
     -- Signal
-    if lib._pj_unlocked then
+    if self._pj_unlocked then
         self.callbacks:Fire("PetListUpdated", self)
     end
     
@@ -267,7 +267,7 @@ function lib:LoadPets()
     self:RestoreFilters()
     
     self.event_frame:Hide()
-    lib._running = false
+    self._running = false
     
     return true
 end
@@ -283,7 +283,7 @@ end
 -- @name LibPetJournal:NumPets()
 -- @return number of owned pets
 function lib:NumPets()
-    return #lib._petids
+    return #self._petids
 end
 
 lib.event_frame:RegisterEvent("COMPANION_UPDATE")
