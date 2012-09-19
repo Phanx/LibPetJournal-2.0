@@ -225,6 +225,7 @@ function lib:LoadPets()
         return false
     end
     
+    lib._pj_unlocked = C_PetJournal.IsJournalUnlocked()
     lib._running = true
     self:ClearFilters()
     
@@ -258,7 +259,9 @@ function lib:LoadPets()
     end
     
     -- Signal
-    self.callbacks:Fire("PetListUpdated", self)
+    if lib._pj_unlocked then
+        self.callbacks:Fire("PetListUpdated", self)
+    end
     
     -- restore PJ filters
     self:RestoreFilters()
@@ -273,7 +276,7 @@ end
 -- @name LibPetJournal:IsLoaded()
 -- @return boolean indicating whether the pet list has been loaded.
 function lib:IsLoaded()
-    return #lib._petids > 0 or #lib._speciesids > 0
+    return self._pj_unlocked and (#self._petids > 0 or #self._speciesids > 0)
 end
 
 --- Determine how many pets the player owns.
