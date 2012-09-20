@@ -229,8 +229,8 @@ function lib:LoadPets()
         return false
     end
     
-    lib._pj_unlocked = IsLoggedIn() and C_PetJournal.IsJournalUnlocked()
-    if not lib._pj_unlocked then
+    lib._pj_ready = IsLoggedIn() and C_PetJournal.IsJournalUnlocked()
+    if not lib._pj_ready then
         return false
     end
     
@@ -283,7 +283,7 @@ end
 -- @name LibPetJournal:IsLoaded()
 -- @return boolean indicating whether the pet list has been loaded.
 function lib:IsLoaded()
-    return self._pj_unlocked and (#self._petids > 0 or #self._speciesids > 0)
+    return self._pj_ready and (#self._petids > 0 or #self._speciesids > 0)
 end
 
 --- Determine how many pets the player owns.
