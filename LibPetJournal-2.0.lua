@@ -226,6 +226,10 @@ function lib:LoadPets()
     end
     
     lib._pj_unlocked = C_PetJournal.IsJournalUnlocked()
+    if not lib._pj_unlocked then
+        return false
+    end
+    
     lib._running = true
     self:ClearFilters()
     
@@ -259,9 +263,7 @@ function lib:LoadPets()
     end
     
     -- Signal
-    if self._pj_unlocked then
-        self.callbacks:Fire("PetListUpdated", self)
-    end
+    self.callbacks:Fire("PetListUpdated", self)
     
     -- restore PJ filters
     self:RestoreFilters()
