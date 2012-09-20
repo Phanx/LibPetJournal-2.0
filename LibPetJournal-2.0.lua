@@ -237,7 +237,6 @@ function lib:LoadPets()
     lib._running = true
     self:ClearFilters()
     
-    -- scan pets
     wipe(lib._petids)
     
     local total, owned = C_PetJournal.GetNumPets(false)
@@ -249,6 +248,7 @@ function lib:LoadPets()
     end
     lib._last_total = total
     
+    -- scan pets
     for i = 1,total do
         local petID, speciesID, isOwned, _, _, _, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByIndex(i, false)
         
@@ -323,7 +323,7 @@ function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
             return
         end
     elseif total > lib._last_total then
-        start_background()
+        return start_background()
     end
     
     lib.callbacks:Fire("PetsUpdated", self)
@@ -346,7 +346,9 @@ end
 lib.event_frame:SetScript("OnUpdate", function(frame, elapsed)
     timer = timer + elapsed
     if timer > 2 then        
-        lib:LoadPets()
+        if lib:LoadPets() then
+            lib.callbacks:Fire("PetsUpdated", self)
+        end
         timer = 0
     end
 end)
