@@ -34,6 +34,8 @@ local hooksecurefunc, tinsert, pairs, wipe = _G.hooksecurefunc, _G.table.insert,
 local ipairs = _G.ipairs
 local C_PetJournal = _G.C_PetJournal
 
+local start_background
+
 --
 --
 --
@@ -189,6 +191,8 @@ lib._set_speciesids = lib._set_speciesids or {}
 lib._creatureids = lib._creatureids or {}
 lib._set_creatureids = lib._set_creatureids or {}
 
+lib._last_total = lib._last_total or 0
+
 --- Get an iterator over the list of pet ids.
 -- The specific order of pet ids returned should not be relied upon.
 -- @name LibPetJournal:IteratePetIDs()
@@ -243,6 +247,7 @@ function lib:LoadPets()
         self._running = false
         return
     end
+    lib._last_total = total
     
     for i = 1,total do
         local petID, speciesID, isOwned, _, _, _, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByIndex(i, false)
@@ -317,6 +322,8 @@ function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
             lib.event_frame:Show()
             return
         end
+    elseif total > lib._last_total then
+        start_background()
     end
     
     lib.callbacks:Fire("PetsUpdated", self)
@@ -331,6 +338,11 @@ function lib.event_frame:ADDON_LOADED()
 end
 
 local timer = 0
+function start_background()
+    timer = 10
+    lib.event_frame:Show()
+end
+
 lib.event_frame:SetScript("OnUpdate", function(frame, elapsed)
     timer = timer + elapsed
     if timer > 2 then        
