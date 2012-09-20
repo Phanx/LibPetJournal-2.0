@@ -288,6 +288,13 @@ function lib:NumPets()
     return #self._petids
 end
 
+--- Determine how many owned and unowned species are exposed to the player.
+-- @name LibPetJournal:NumSpecies()
+-- @return number of species in the PetJournal
+function lib:NumSpecies()
+    return #self._speciesids
+end
+
 lib.event_frame:RegisterEvent("COMPANION_UPDATE")
 function lib.event_frame:COMPANION_UPDATE(...)
     local ctype = ...
