@@ -229,7 +229,7 @@ function lib:LoadPets()
         return false
     end
     
-    lib._pj_ready = IsLoggedIn() and C_PetJournal.IsJournalUnlocked()
+    lib._pj_ready = IsLoggedIn()
     if not lib._pj_ready then
         return false
     end
