@@ -259,7 +259,6 @@ function lib:LoadPets()
             -- This check only seems to need to happen once.
             local _, _, _, _, _, _, name = C_PetJournal.GetPetInfoByPetID(petID)
             if not name then
-                wipe(lib._petids)
                 self:RestoreFilters()
                 self._running = false
                 start_background()
