@@ -261,8 +261,8 @@ function lib:LoadPets()
             if not name then
                 wipe(lib._petids)
                 self:RestoreFilters()
-                self.event_frame:Show()
                 self._running = false
+                start_background()
                 return false
             end
         end
