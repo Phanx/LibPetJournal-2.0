@@ -253,7 +253,7 @@ function lib:LoadPets()
     for i = 1,total do
         local petID, speciesID, isOwned, _, _, _, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByIndex(i, false)
         
-        if i == 1 and (petID ~= nil and petID > 0) then
+        if i == 1 and isOwned then
             -- PetJournal has some weird consistency issues when the UI is loading.
             -- GetPetInfoByPetID is not immediately ready, while GetPetInfoByIndex is.
             -- This check only seems to need to happen once.
