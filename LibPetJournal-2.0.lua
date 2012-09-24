@@ -253,6 +253,20 @@ function lib:LoadPets()
     for i = 1,total do
         local petID, speciesID, isOwned, _, _, _, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByIndex(i, false)
         
+        if i == 1 then
+            -- PetJournal has some weird consistency issues when the UI is loading.
+            -- GetPetInfoByPetID is not immediately ready, while GetPetInfoByIndex is.
+            -- This check only seems to need to happen once.
+            local _, _, _, _, _, _, name = C_PetJournal.GetPetInfoByPetID(petID)
+            if not name then
+                wipe(lib._petids)
+                self:RestoreFilters()
+                self.event_frame:Show()
+                self._running = false
+                return false
+            end
+        end
+        
         if isOwned then
             tinsert(self._petids, petID)
         end
