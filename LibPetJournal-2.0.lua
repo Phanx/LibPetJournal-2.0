@@ -230,11 +230,6 @@ function lib:LoadPets()
         return false
     end
     
-    lib._pj_ready = IsLoggedIn()
-    if not lib._pj_ready then
-        return false
-    end
-    
     lib._running = true
     self:ClearFilters()
     
@@ -297,7 +292,7 @@ end
 -- @name LibPetJournal:IsLoaded()
 -- @return boolean indicating whether the pet list has been loaded.
 function lib:IsLoaded()
-    return self._pj_ready and (#self._petids > 0 or #self._speciesids > 0)
+    return #self._petids > 0 or #self._speciesids > 0
 end
 
 --- Determine how many pets the player owns.
@@ -316,6 +311,10 @@ end
 
 lib.event_frame:RegisterEvent("PET_JOURNAL_LIST_UPDATE")
 function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
+    if not IsLoggedIn() then
+        return
+    end
+    
     local total, owned = C_PetJournal.GetNumPets(false)
     
     if lib._last_owned ~= owned then
@@ -334,6 +333,12 @@ end
 lib.event_frame:RegisterEvent("ADDON_LOADED")
 function lib.event_frame:ADDON_LOADED()
     lib.event_frame:UnregisterEvent("ADDON_LOADED")
+    
+    if IsLoggedIn() then
+        -- PJLU will come later
+        return
+    end
+    
     if not lib:IsLoaded() then
         lib:LoadPets()
     end
