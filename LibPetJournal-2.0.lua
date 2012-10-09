@@ -334,7 +334,7 @@ lib.event_frame:RegisterEvent("ADDON_LOADED")
 function lib.event_frame:ADDON_LOADED()
     lib.event_frame:UnregisterEvent("ADDON_LOADED")
     
-    if IsLoggedIn() then
+    if not IsLoggedIn() then
         -- PJLU will come later
         return
     end
