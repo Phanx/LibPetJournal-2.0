@@ -25,6 +25,8 @@ local lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not lib then return end
 
+local is5_0 = select(4, GetBuildInfo()) < 50100
+
 --
 -- GLOBALS: PetJournal
 --
@@ -252,7 +254,13 @@ function lib:LoadPets()
             -- PetJournal has some weird consistency issues when the UI is loading.
             -- GetPetInfoByPetID is not immediately ready, while GetPetInfoByIndex is.
             -- This check only seems to need to happen once.
-            local _, _, _, _, _, _, name = C_PetJournal.GetPetInfoByPetID(petID)
+            local _, name
+            if is5_0 then
+                _, _, _, _, _, _, name = C_PetJournal.GetPetInfoByPetID(petID)
+            else
+                _, _, _, _, _, _, _, name = C_PetJournal.GetPetInfoByPetID(petID)
+            end
+
             if not name then
                 self:RestoreFilters()
                 self._running = false
@@ -316,7 +324,6 @@ function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
     end
     
     local total, owned = C_PetJournal.GetNumPets(false)
-    
     if lib._last_owned ~= owned then
         lib._last_owned = owned
         if not lib:LoadPets() then
