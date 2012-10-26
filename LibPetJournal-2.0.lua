@@ -289,6 +289,9 @@ function lib:LoadPets()
     
     -- restore PJ filters
     self:RestoreFilters()
+
+    -- Signal, part 2
+    self.callbacks:Fire("PostPetListUpdated", self)
     
     self.event_frame:Hide()
     self._running = false
