@@ -237,7 +237,7 @@ function lib:LoadPets()
     
     wipe(lib._petids)
     
-    local total, owned = C_PetJournal.GetNumPets(false)
+    local total, owned = C_PetJournal.GetNumPets()
     if total == 0 and owned == 0 then
         self:RestoreFilters()
         self.event_frame:Show()
@@ -248,7 +248,7 @@ function lib:LoadPets()
     
     -- scan pets
     for i = 1,total do
-        local petID, speciesID, isOwned, _, _, _, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByIndex(i, false)
+        local petID, speciesID, isOwned, _, _, _, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByIndex(i)
         
         if i == 1 and isOwned then
             -- PetJournal has some weird consistency issues when the UI is loading.
