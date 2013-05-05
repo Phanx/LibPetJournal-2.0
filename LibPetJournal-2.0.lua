@@ -326,7 +326,7 @@ function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
         return
     end
     
-    local total, owned = C_PetJournal.GetNumPets(false)
+    local total, owned = C_PetJournal.GetNumPets()
     if lib._last_owned ~= owned then
         lib._last_owned = owned
         if not lib:LoadPets() then
