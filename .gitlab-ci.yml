@@ -9,9 +9,9 @@ hg-master:
         - if git config remote.curse.url > /dev/null; then git remote remove curse; fi
         - git remote add curse hg::ssh://hg@hg.curseforge.net/wow/libpetjournal-2-0/mainline
         - git pull curse master
-#        - git push curse HEAD:master
-#        - git pull curse master
-#        - git push -f git@git.cornhooves.org:wowui/LibPetJournal-2.0.git HEAD:refs/heads/from-curse
+        - git push curse HEAD:master
+        - git pull curse master
+        - git push -f git@git.cornhooves.org:wowui/LibPetJournal-2.0.git HEAD:refs/heads/from-curse
 
 hg-tags:
     stage: sync
@@ -21,6 +21,6 @@ hg-tags:
         - if git config remote.curse.url > /dev/null; then git remote remove curse; fi
         - git remote add curse hg::ssh://hg@hg.curseforge.net/wow/libpetjournal-2-0/mainline
         - git pull curse master
-#        - git push curse "$CI_BUILD_REF_NAME"
-#        - git pull curse master
-#        - git push -f git@git.cornhooves.org:wowui/LibPetJournal-2.0.git HEAD:refs/heads/from-curse
+        - git push curse "$CI_BUILD_REF_NAME"
+        - git pull curse master
+        - git push -f git@git.cornhooves.org:wowui/LibPetJournal-2.0.git HEAD:refs/heads/from-curse
