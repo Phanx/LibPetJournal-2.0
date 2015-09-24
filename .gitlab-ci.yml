@@ -11,7 +11,12 @@ hg-master:
         - git pull curse master
         - git push curse HEAD:master
         - git pull curse master
-        - git push -f git@git.cornhooves.org:wowui/LibPetJournal-2.0.git HEAD:refs/heads/from-curse
+        - >
+          if [ `git rev-parse HEAD` != "$CI_BUILD_REF" ]; then
+            git push -f git@git.cornhooves.org:wowui/LibPetJournal-2.0.git HEAD:refs/heads/from-curse;
+          else
+            echo 'No new commits.';
+          fi
 
 hg-tags:
     stage: sync
@@ -23,4 +28,9 @@ hg-tags:
         - git pull curse master
         - git push curse "$CI_BUILD_REF_NAME"
         - git pull curse master
-        - git push -f git@git.cornhooves.org:wowui/LibPetJournal-2.0.git HEAD:refs/heads/from-curse
+        - >
+          if [ `git rev-parse HEAD` != "$CI_BUILD_REF" ]; then
+            git push -f git@git.cornhooves.org:wowui/LibPetJournal-2.0.git HEAD:refs/heads/from-curse;
+          else
+            echo 'No new commits.';
+          fi
