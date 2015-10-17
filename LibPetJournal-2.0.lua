@@ -56,33 +56,36 @@ do
         [LE_PET_JOURNAL_FLAG_COLLECTED] = true,
         [LE_PET_JOURNAL_FLAG_NOT_COLLECTED] = true,
     }
-
-    local s_search_filter
-    local flag_filters = {}
-    local type_filters = {}
-    local source_filters = {}
-    
+   
     lib._filter_hooks = lib._filter_hooks or {}
+    lib._filter_values = lib._filter_values or {}
+    lib._filter_values.flag_filters = lib._filter_values.flag_filters or {}
+    lib._filter_values.type_filters = lib._filter_values.type_filters or {}
+    lib._filter_values.source_filters = lib._filter_values.source_filters or {}
+
+    local filter_values = lib._filter_values
+    local flag_filters = filter_values.flag_filters
+    local type_filters = filter_values.type_filters
+    local source_filters = filter_values.source_filters
 
     -- hook C_PetJournal.SetSearchFilter
-    local last_search_filter
     if not lib._filter_hooks.SetSearchFilter then
         hooksecurefunc(C_PetJournal, "SetSearchFilter", function(...)
              lib._filter_hooks.SetSearchFilter(...)
         end)
     end
     lib._filter_hooks.SetSearchFilter = function(str)
-        last_search_filter = str
+        filter_values.last_search_filter = str
     end
     
     -- hook C_PetJournal.ClearSearchFilter
     if not lib._filter_hooks.ClearSearchFilter then
         hooksecurefunc(C_PetJournal, "ClearSearchFilter", function(...)
-             lib._filter_hooks.ClearSearchFilter(...)
+            lib._filter_hooks.ClearSearchFilter(...)
         end)
     end
     lib._filter_hooks.ClearSearchFilter = function()
-        last_search_filter = ""
+        filter_values.last_search_filter = ""
     end
 
     --- Save and clear the PetJournal filters.
@@ -130,17 +133,17 @@ do
             C_PetJournal.AddAllPetSourcesFilter()
         end
 
-        if last_search_filter == nil then
+        if filter_values.last_search_filter == nil then
             -- There's no way to actually get the current search filter without hooking it,
             -- and anyone loading earlier (especially if we are LOD) could have set it
             -- before our hook, so always clear the first time
-            last_search_filter = ""
+            filter_values.last_search_filter = ""
             C_PetJournal.ClearSearchFilter()
-        elseif last_search_filter ~= "" then
-            s_search_filter = last_search_filter
+        elseif filter_values.last_search_filter ~= "" then
+            filter_values.s_search_filter = filter_values.last_search_filter
             C_PetJournal.ClearSearchFilter()
         else
-            s_search_filter = nil
+            filter_values.s_search_filter = nil
         end
     end
 
@@ -152,8 +155,8 @@ do
         assert(lib._filters_cleared, "ClearFilters() not called yet")
         lib._filters_cleared = false
         
-        if s_search_filter and s_search_filter ~= "" then
-            C_PetJournal.SetSearchFilter(s_search_filter)
+        if filter_values.s_search_filter and filter_values.s_search_filter ~= "" then
+            C_PetJournal.SetSearchFilter(filter_values.s_search_filter)
         end
         
         for flag, value in pairs(flag_filters) do
