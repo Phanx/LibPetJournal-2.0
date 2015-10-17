@@ -57,11 +57,6 @@ do
         [LE_PET_JOURNAL_FLAG_NOT_COLLECTED] = true,
     }
 
-    -- pre-WoD (<6.0)
-    if LE_PET_JOURNAL_FLAG_FAVORITES ~= nil then
-        PJ_FLAG_FILTERS[LE_PET_JOURNAL_FLAG_FAVORITES] = false
-    end
-
     local s_search_filter
     local flag_filters = {}
     local type_filters = {}
