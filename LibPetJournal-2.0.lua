@@ -103,34 +103,64 @@ do
         lib.event_frame:UnregisterEvent("PET_JOURNAL_LIST_UPDATE")
 
         for flag, value in pairs(PJ_FLAG_FILTERS) do
-            flag_filters[flag] = not C_PetJournal.IsFlagFiltered(flag)
+            if C_PetJournal.IsFlagFiltered then
+                -- WoW<7.0
+                flag_filters[flag] = not C_PetJournal.IsFlagFiltered(flag)
+            else
+                flag_filters[flag] = not C_PetJournal.IsFilterChecked(flag)
+            end
             if flag_filters[flag] ~= value then
-                C_PetJournal.SetFlagFilter(flag, value)
+                if C_PetJournal.SetFlagFilter then
+                    -- WoW<7.0
+                    C_PetJournal.SetFlagFilter(flag, value)
+                else
+                    C_PetJournal.SetFilterChecked(flag, value)
+                end
             end
         end
         
         local need_add_all = false
         local ntypes = C_PetJournal.GetNumPetTypes()
         for i=1,ntypes do
-            type_filters[i] = not C_PetJournal.IsPetTypeFiltered(i)
+            if C_PetJournal.IsPetTypeFiltered then
+                -- WoW<7.0
+                type_filters[i] = not C_PetJournal.IsPetTypeFiltered(i)
+            else
+                type_filters[i] = not C_PetJournal.IsPetTypeChecked(i)
+            end
             if not type_filters[i] then
                 need_add_all = true
             end
         end
         if need_add_all then
-            C_PetJournal.AddAllPetTypesFilter()
+            if C_PetJournal.AddAllPetTypesFilter then
+                -- WoW<7.0
+                C_PetJournal.AddAllPetTypesFilter()
+            else
+                C_PetJournal.SetAllPetTypesChecked()
+            end
         end
         
         need_add_all = false
         local nsources = C_PetJournal.GetNumPetSources()
         for i=1,nsources do
-            source_filters[i] = not C_PetJournal.IsPetSourceFiltered(i)
+            if C_PetJournal.IsPetSourceFiltered then
+                -- WoW<7.0
+                source_filters[i] = not C_PetJournal.IsPetSourceFiltered(i)
+            else
+                source_filters[i] = not C_PetJournal.IsPetSourceChecked(i)
+            end
             if not source_filters[i] then
                 need_add_all = true
             end
         end
         if need_add_all then
-            C_PetJournal.AddAllPetSourcesFilter()
+            if C_PetJournal.AddAllPetSourcesFilter then
+                -- WoW<7.0
+                C_PetJournal.AddAllPetSourcesFilter()
+            else
+                C_PetJournal.SetAllPetSourcesChecked()
+            end
         end
 
         if filter_values.last_search_filter == nil then
@@ -161,19 +191,34 @@ do
         
         for flag, value in pairs(flag_filters) do
             if value ~= PJ_FLAG_FILTERS[flag] then
-                C_PetJournal.SetFlagFilter(flag, value)
+                if C_PetJournal.SetFlagFilter then
+                    -- WoW<7.0
+                    C_PetJournal.SetFlagFilter(flag, value)
+                else
+                    C_PetJournal.SetFilterChecked(flag, value)
+                end
             end
         end
         
         for flag,value in pairs(type_filters) do
             if value ~= true then
-                C_PetJournal.SetPetTypeFilter(flag, value)
+                if C_PetJournal.SetPetTypeFilter then
+                    -- WoW<7.0
+                    C_PetJournal.SetPetTypeFilter(flag, value)
+                else
+                    C_PetJournal.IsFilterChecked(flag, value)
+                end
             end
         end
         
         for flag,value in pairs(source_filters) do
             if value ~= true then
-                C_PetJournal.SetPetSourceFilter(flag, value)
+                if C_PetJournal.SetPetSourceFilter then
+                    -- WoW<7.0
+                    C_PetJournal.SetPetSourceFilter(flag, value)
+                else
+                    C_PetJournal.SetPetSourceChecked(flag, value)
+                end
             end
         end
     
