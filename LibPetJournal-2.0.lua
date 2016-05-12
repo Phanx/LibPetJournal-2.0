@@ -53,9 +53,11 @@ end)
 
 do
     local PJ_FLAG_FILTERS = {
-        [LE_PET_JOURNAL_FLAG_COLLECTED] = true,
-        [LE_PET_JOURNAL_FLAG_NOT_COLLECTED] = true,
+        -- WoW<7.0 -- LE_PET_JOURNAL_FLAG_COLLECTED/LE_PET_JOURNAL_FLAG_NOT_COLLECTED
+        [LE_PET_JOURNAL_FLAG_COLLECTED or LE_PET_JOURNAL_FILTER_COLLECTED] = true,
+        [LE_PET_JOURNAL_FLAG_NOT_COLLECTED or LE_PET_JOURNAL_FILTER_NOT_COLLECTED] = true,
     }
+   
    
     lib._filter_hooks = lib._filter_hooks or {}
     lib._filter_values = lib._filter_values or {}
