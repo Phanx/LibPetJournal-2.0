@@ -109,7 +109,7 @@ do
                 -- WoW<7.0
                 flag_filters[flag] = not C_PetJournal.IsFlagFiltered(flag)
             else
-                flag_filters[flag] = not C_PetJournal.IsFilterChecked(flag)
+                flag_filters[flag] = C_PetJournal.IsFilterChecked(flag)
             end
             if flag_filters[flag] ~= value then
                 if C_PetJournal.SetFlagFilter then
@@ -128,7 +128,7 @@ do
                 -- WoW<7.0
                 type_filters[i] = not C_PetJournal.IsPetTypeFiltered(i)
             else
-                type_filters[i] = not C_PetJournal.IsPetTypeChecked(i)
+                type_filters[i] = C_PetJournal.IsPetTypeChecked(i)
             end
             if not type_filters[i] then
                 need_add_all = true
@@ -139,7 +139,7 @@ do
                 -- WoW<7.0
                 C_PetJournal.AddAllPetTypesFilter()
             else
-                C_PetJournal.SetAllPetTypesChecked()
+                C_PetJournal.SetAllPetTypesChecked(true)
             end
         end
         
@@ -150,7 +150,7 @@ do
                 -- WoW<7.0
                 source_filters[i] = not C_PetJournal.IsPetSourceFiltered(i)
             else
-                source_filters[i] = not C_PetJournal.IsPetSourceChecked(i)
+                source_filters[i] = C_PetJournal.IsPetSourceChecked(i)
             end
             if not source_filters[i] then
                 need_add_all = true
@@ -161,7 +161,7 @@ do
                 -- WoW<7.0
                 C_PetJournal.AddAllPetSourcesFilter()
             else
-                C_PetJournal.SetAllPetSourcesChecked()
+                C_PetJournal.SetAllPetSourcesChecked(true)
             end
         end
 
