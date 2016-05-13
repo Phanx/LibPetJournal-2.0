@@ -98,6 +98,8 @@ do
     -- automatically by LibPetJournal.
     -- @name LibPetJournal:ClearFilters()
     function lib:ClearFilters()
+        local has_changes = false
+
         assert(not lib._filters_cleared, "ClearFilters() already called")
         lib._filters_cleared = true
         
@@ -122,6 +124,7 @@ do
                 else
                     C_PetJournal.SetFilterChecked(flag, value)
                 end
+                has_changes = true
             end
         end
         
@@ -145,6 +148,7 @@ do
             else
                 C_PetJournal.SetAllPetTypesChecked(true)
             end
+            has_changes = true
         end
         
         need_add_all = false
@@ -167,6 +171,7 @@ do
             else
                 C_PetJournal.SetAllPetSourcesChecked(true)
             end
+            has_changes = true
         end
 
         if filter_values.last_search_filter == nil then
@@ -178,9 +183,12 @@ do
         elseif filter_values.last_search_filter ~= "" then
             filter_values.s_search_filter = filter_values.last_search_filter
             C_PetJournal.ClearSearchFilter()
+            has_changes = true
         else
             filter_values.s_search_filter = nil
         end
+
+        return has_changes
     end
 
     --- Restore PetJournal filters after a :ClearFilters() call.
@@ -286,9 +294,9 @@ function lib:LoadPets()
     end
     
     lib._running = true
-    self:ClearFilters()
+    local filters_changed = self:ClearFilters()
     
-    if is_lt_70 then
+    if not filters_changed or is_lt_70 then
         self:_LoadPets()
         self:_LoadPetsFinish()
     else
@@ -388,7 +396,7 @@ function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
     if not IsLoggedIn() then
         return
     end
-    
+
     if lib._waiting then
         lib._waiting = false
         lib:_LoadPets() 
