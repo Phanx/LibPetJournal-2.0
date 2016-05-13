@@ -216,12 +216,7 @@ do
         
         for flag,value in pairs(type_filters) do
             if value ~= true then
-                if C_PetJournal.SetPetTypeFilter then
-                    -- WoW<7.0
-                    C_PetJournal.SetPetTypeFilter(flag, value)
-                else
-                    C_PetJournal.IsFilterChecked(flag, value)
-                end
+                C_PetJournal.SetPetTypeFilter(flag, value)
             end
         end
         
