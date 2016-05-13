@@ -20,7 +20,7 @@
  IN THE SOFTWARE.
 ]]
 
-local MAJOR, MINOR = "LibPetJournal-2.0", 28
+local MAJOR, MINOR = "LibPetJournal-2.0", 29
 local lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not lib then return end
