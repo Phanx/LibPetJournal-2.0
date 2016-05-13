@@ -36,6 +36,8 @@ local C_PetJournal = _G.C_PetJournal
 
 local start_background
 
+local is_lt_70 = select(4, GetBuildInfo()) < 70000
+
 --
 --
 --
@@ -102,7 +104,9 @@ do
         if _G.PetJournal then
             _G.PetJournal:UnregisterEvent("PET_JOURNAL_LIST_UPDATE")
         end
-        lib.event_frame:UnregisterEvent("PET_JOURNAL_LIST_UPDATE")
+        if is_lt_70 then
+            lib.event_frame:UnregisterEvent("PET_JOURNAL_LIST_UPDATE")
+        end
 
         for flag, value in pairs(PJ_FLAG_FILTERS) do
             if C_PetJournal.IsFlagFiltered then
@@ -227,7 +231,9 @@ do
         if _G.PetJournal then
             _G.PetJournal:RegisterEvent("PET_JOURNAL_LIST_UPDATE")
         end
-        lib.event_frame:RegisterEvent("PET_JOURNAL_LIST_UPDATE")
+        if is_lt_70 then
+            lib.event_frame:RegisterEvent("PET_JOURNAL_LIST_UPDATE")
+        end
     end
 end
 
@@ -275,19 +281,34 @@ end
 -- updates to the Pet Journal.
 -- @name LibPetJournal:LoadPets()
 function lib:LoadPets()
-    if self._running then
-        return false
+    if self._running or lib._waiting then
+        return
     end
     
     lib._running = true
     self:ClearFilters()
     
+    if is_lt_70 then
+        self:_LoadPets()
+        self:_LoadPetsFinish()
+    else
+        -- The collected/uncollected flags seem to no longer take effect immediately,
+        -- so we'll need to wait for PJLU to finish our work.
+        lib._waiting = true
+    end
+end
+
+local function doLoadPets()
+    lib:LoadPets()
+end
+
+function lib:_LoadPets()
     wipe(lib._petids)
-    
+
     local total, owned = C_PetJournal.GetNumPets()
     if total == 0 and owned == 0 then
         self:RestoreFilters()
-        self.event_frame:Show()
+        C_Timer.After(0.1, doLoadPets)
         self._running = false
         return
     end
@@ -325,7 +346,9 @@ function lib:LoadPets()
             tinsert(self._creatureids, creatureID)
         end
     end
-    
+end
+
+function lib:_LoadPetsFinish()
     -- Signal
     self.callbacks:Fire("PetListUpdated", self)
     
@@ -337,8 +360,6 @@ function lib:LoadPets()
     
     self.event_frame:Hide()
     self._running = false
-    
-    return true
 end
 
 --- Determine if the pet list has been loaded.
@@ -368,15 +389,19 @@ function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
         return
     end
     
+    if lib._waiting then
+        lib._waiting = false
+        lib:_LoadPets() 
+        lib:_LoadPetsFinish()
+        return
+    end
+
     local total, owned = C_PetJournal.GetNumPets()
     if lib._last_owned ~= owned then
         lib._last_owned = owned
-        if not lib:LoadPets() then
-            lib.event_frame:Show()
-            return
-        end
+        lib:LoadPets()
     elseif total > lib._last_total then
-        return start_background()
+        C_Timer.After(0.1, doLoadPets)
     end
     
     lib.callbacks:Fire("PetsUpdated", self)
@@ -396,19 +421,4 @@ function lib.event_frame:ADDON_LOADED()
     end
 end
 
-local timer = 0
-function start_background()
-    timer = 10
-    lib.event_frame:Show()
-end
-
-lib.event_frame:SetScript("OnUpdate", function(frame, elapsed)
-    timer = timer + elapsed
-    if timer > 2 then        
-        if lib:LoadPets() then
-            lib.callbacks:Fire("PetsUpdated", lib)
-        end
-        timer = 0
-    end
-end)
-
+lib.event_frame:SetScript("OnUpdate", nil)
