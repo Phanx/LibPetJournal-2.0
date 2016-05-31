@@ -34,8 +34,6 @@ local assert, hooksecurefunc, ipairs, IsLoggedIn, pairs, tinsert, wipe
     = assert, hooksecurefunc, ipairs, IsLoggedIn, pairs, tinsert, wipe
 local C_PetJournal = _G.C_PetJournal
 
-local start_background
-
 local is_lt_70 = select(4, GetBuildInfo()) < 70000
 
 --
@@ -305,15 +303,19 @@ local function doLoadPets()
     lib:LoadPets()
 end
 
+local function restoreAndRetryLater()
+    lib:RestoreFilters()
+    lib._running = false
+    C_Timer.After(0.1, doLoadPets)
+end
+
 function lib:_LoadPets()
     wipe(lib._petids)
 
     local total, owned = C_PetJournal.GetNumPets()
     if total == 0 and owned == 0 then
-        self:RestoreFilters()
-        C_Timer.After(0.1, doLoadPets)
-        self._running = false
-        return
+        restoreAndRetryLater()
+        return false
     end
     lib._last_total = total
     
@@ -328,9 +330,7 @@ function lib:_LoadPets()
             local _, _, _, _, _, _, _, name = C_PetJournal.GetPetInfoByPetID(petID)
 
             if not name then
-                self:RestoreFilters()
-                self._running = false
-                start_background()
+                restoreAndRetryLater()
                 return false
             end
         end
