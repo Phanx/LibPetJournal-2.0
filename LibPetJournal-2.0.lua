@@ -30,8 +30,8 @@ if not lib then return end
 --
 
 local _G = _G
-local assert, hooksecurefunc, ipairs, IsLoggedIn, pairs, tinsert, wipe
-    = assert, hooksecurefunc, ipairs, IsLoggedIn, pairs, tinsert, wipe
+local assert, GetTime, hooksecurefunc, ipairs, IsLoggedIn, pairs, tinsert, wipe
+    = assert, GetTime, hooksecurefunc, ipairs, IsLoggedIn, pairs, tinsert, wipe
 local C_PetJournal = _G.C_PetJournal
 
 local is_lt_70 = select(4, GetBuildInfo()) < 70000
@@ -277,6 +277,21 @@ function lib:GetSpeciesIDForCreatureID(creatureid)
     return self._set_creatureids[creatureid]
 end
 
+local function loadPetsTimeout()
+    -- we were waiting for PJLU, but it never came
+    -- this should rarely happen!
+
+    if not lib._waiting or lib._timeout_started == nil then
+        return
+    end
+
+    if GetTime() - lib._timeout_started > 0.4 then
+        lib._waiting = false
+        lib:_LoadPets() 
+        lib:_LoadPetsFinish()
+    end
+end
+
 --- Load pets stored in the PetJournal.
 -- Under normal circumstances with API will run on its own in response to
 -- updates to the Pet Journal.
@@ -296,6 +311,8 @@ function lib:LoadPets()
         -- The collected/uncollected flags seem to no longer take effect immediately,
         -- so we'll need to wait for PJLU to finish our work.
         lib._waiting = true
+        lib._timeout_started = GetTime()
+        C_Timer.After(0.5, loadPetsTimeout)
     end
 end
 
