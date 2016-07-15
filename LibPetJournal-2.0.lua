@@ -287,8 +287,9 @@ local function loadPetsTimeout()
 
     if GetTime() - lib._timeout_started > 0.4 then
         lib._waiting = false
-        lib:_LoadPets() 
-        lib:_LoadPetsFinish()
+        if lib:_LoadPets() then
+            lib:_LoadPetsFinish()
+        end
     end
 end
 
@@ -305,8 +306,9 @@ function lib:LoadPets()
     local filters_changed = self:ClearFilters()
     
     if not filters_changed or is_lt_70 then
-        self:_LoadPets()
-        self:_LoadPetsFinish()
+        if self:_LoadPets() then
+            self:_LoadPetsFinish()
+        end
     else
         -- The collected/uncollected flags seem to no longer take effect immediately,
         -- so we'll need to wait for PJLU to finish our work.
@@ -366,6 +368,8 @@ function lib:_LoadPets()
             tinsert(self._creatureids, creatureID)
         end
     end
+
+    return true
 end
 
 function lib:_LoadPetsFinish()
@@ -411,8 +415,9 @@ function lib.event_frame:PET_JOURNAL_LIST_UPDATE()
 
     if lib._waiting then
         lib._waiting = false
-        lib:_LoadPets() 
-        lib:_LoadPetsFinish()
+        if lib:_LoadPets() then
+            lib:_LoadPetsFinish()
+        end
         return
     end
 
