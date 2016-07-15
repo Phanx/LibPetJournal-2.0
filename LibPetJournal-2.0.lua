@@ -36,6 +36,8 @@ local C_PetJournal = _G.C_PetJournal
 
 local is_lt_70 = select(4, GetBuildInfo()) < 70000
 
+local PJLU_TIMEOUT = 1
+
 --
 --
 --
@@ -285,7 +287,7 @@ local function loadPetsTimeout()
         return
     end
 
-    if GetTime() - lib._timeout_started > 0.4 then
+    if GetTime() - lib._timeout_started >= PJLU_TIMEOUT then
         lib._waiting = false
         if lib:_LoadPets() then
             lib:_LoadPetsFinish()
@@ -314,7 +316,7 @@ function lib:LoadPets()
         -- so we'll need to wait for PJLU to finish our work.
         lib._waiting = true
         lib._timeout_started = GetTime()
-        C_Timer.After(0.5, loadPetsTimeout)
+        C_Timer.After(PJLU_TIMEOUT, loadPetsTimeout)
     end
 end
 
