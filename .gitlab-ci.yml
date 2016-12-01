@@ -1,7 +1,7 @@
 stages:
     - sync
 
-image: docker.git.cornhooves.org/wowui/LibPetJournal-2.0:ci
+image: docker.git.cornhooves.org/wowui/libpetjournal-2.0:ci
 
 sync-curse:
     stage: sync
