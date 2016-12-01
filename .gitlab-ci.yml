@@ -1,36 +1,12 @@
 stages:
     - sync
 
-hg-master:
-    stage: sync
-    only:
-        - master
-    script:
-        - if git config remote.curse.url > /dev/null; then git remote remove curse; fi
-        - git remote add curse hg::ssh://hg@hg.curseforge.net/wow/libpetjournal-2-0/mainline
-        - git pull curse master
-        - git push curse HEAD:master
-        - git pull curse master
-        - >
-          if [ `git rev-parse HEAD` != "$CI_BUILD_REF" ]; then
-            git push -f git@git.cornhooves.org:wowui/LibPetJournal-2.0.git HEAD:refs/heads/from-curse;
-          else
-            echo 'No new commits.';
-          fi
+image: docker.git.cornhooves.org/wowui/LibPetJournal-2.0:ci
 
-hg-tags:
+sync-curse:
     stage: sync
     only:
         - tags
+        - master
     script:
-        - if git config remote.curse.url > /dev/null; then git remote remove curse; fi
-        - git remote add curse hg::ssh://hg@hg.curseforge.net/wow/libpetjournal-2-0/mainline
-        - git pull curse master
-        - git push curse "$CI_BUILD_REF_NAME"
-        - git pull curse master
-        - >
-          if [ `git rev-parse HEAD` != "$CI_BUILD_REF" ]; then
-            git push -f git@git.cornhooves.org:wowui/LibPetJournal-2.0.git HEAD:refs/heads/from-curse;
-          else
-            echo 'No new commits.';
-          fi
+        - sync-curse.sh
